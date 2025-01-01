@@ -106,22 +106,25 @@ export default class ProductController {
 
   async modifyProduct(req, res, next) {
     try {
-      logger.info("----------Start ModifyProduct----------");
+      logger.info("---------- Start ModifyProduct ----------");
 
-      const id = req.user.id;
-      logger.info(`User Id : ${id}`);
+      const id = req.user?.id; // Safely access user id with optional chaining
+      logger.info(`User Id: ${id}`);
 
-      logger.info(`files : ${JSON.stringify(req.files)}`);
+      logger.info(`Files: ${JSON.stringify(req.files)}`);
+
       const images =
         req?.files?.length > 0
-          ? req.files.map((file) => {
-              return `${devUrl}/productImages/${file.filename}`;
-            })
+          ? req.files.map((file) => `${devUrl}/productImages/${file.filename}`)
           : [];
+
       if (images.length > 0) {
-        // req.body.images = images;
-        req.body.images = [...images, req.body?.images ? req.body?.images : []];
+        // Safely handle req.body.images, ensuring it's an array before concatenating
+        req.body.images = Array.isArray(req.body.images)
+          ? [...images, ...req.body.images]
+          : [...images];
       }
+
       logger.info(`Req Body : ${JSON.stringify(req.body)}`);
 
       const productId = req.params.productId;
