@@ -28,3 +28,5 @@ export const STARTINDEX = 1;
 export const MAX_PAGE_SIZE = 20;
 
 export const MAX_RETRY = 3;
+
+export const devUrl = "https://ecommerce-backend-updated.onrender.com";

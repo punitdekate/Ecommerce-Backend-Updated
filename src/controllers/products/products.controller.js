@@ -4,6 +4,7 @@ import {
   CustomMongooseError,
 } from "../../utility/errorhandlers/custom.errorhandler.js";
 import {
+  devUrl,
   INTERNAL_SERVER_ERROR,
   MAX_PAGE_SIZE,
   PRODUCT_ID_IS_REQUIRED,
@@ -80,12 +81,12 @@ export default class ProductController {
       logger.info(`User Id : ${id}`);
 
       req.body.createdBy = id;
-      
+
       logger.info(`files : ${JSON.stringify(req.files)}`);
       const images =
         req?.files?.length > 0
           ? req.files.map((file) => {
-              return `http://localhost:4000/productImages/${file.filename}`;
+              return `${devUrl}/productImages/${file.filename}`;
             })
           : [];
       if (images.length > 0) {
@@ -111,13 +112,15 @@ export default class ProductController {
       logger.info(`User Id : ${id}`);
 
       logger.info(`files : ${JSON.stringify(req.files)}`);
-      const images = req?.files?.length > 0 ? req.files.map((file)=>{
-        return `http://localhost:4000/productImages/${file.filename}`;
-      }) : [];
-      if(images.length > 0){
+      const images =
+        req?.files?.length > 0
+          ? req.files.map((file) => {
+              return `${devUrl}/productImages/${file.filename}`;
+            })
+          : [];
+      if (images.length > 0) {
         // req.body.images = images;
         req.body.images = [...images, req.body?.images ? req.body?.images : []];
-
       }
       logger.info(`Req Body : ${JSON.stringify(req.body)}`);
 
@@ -137,7 +140,7 @@ export default class ProductController {
 
       return res.status(200).json(dbResponse);
     } catch (error) {
-        next(error);
+      next(error);
     }
   }
 
