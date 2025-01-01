@@ -3,6 +3,7 @@ import { auth } from "../../middlewares/users/auth.middleware.js";
 import ProductController from "../../controllers/products/products.controller.js";
 import { roleBasedAuth } from "../../middlewares/products/role.auth.middleware.js";
 import { validateProduct } from "../../middlewares/products/products.middleware.js";
+import { upload } from "../../middlewares/products/upload.middleware.js";
 const productRouter = express.Router();
 
 const productController = new ProductController();
@@ -18,15 +19,23 @@ productRouter.post(
   "/",
   auth,
   roleBasedAuth,
+  upload.array("images",3),
   validateProduct,
+
   (req, res, next) => {
     productController.createProduct(req, res, next);
   }
 );
 
-productRouter.put("/:productId", auth, roleBasedAuth, (req, res, next) => {
-  productController.modifyProduct(req, res, next);
-});
+productRouter.put(
+  "/:productId",
+  auth,
+  roleBasedAuth,
+  upload.array("images",3),
+  (req, res, next) => {
+    productController.modifyProduct(req, res, next);
+  }
+);
 
 productRouter.delete("/:productId", auth, roleBasedAuth, (req, res, next) => {
   productController.deleteProduct(req, res, next);

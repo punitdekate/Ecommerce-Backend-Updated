@@ -15,12 +15,17 @@ const app = express();
 
 app.use(express.static("public"));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Replace with your frontend's origin
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
 
 app.use("/api/ecommerce/cart", auth, cartRouter);
 
-
-// app.use("/api/ecommerce/users/orders", auth, ordersRouter);
+app.use("/api/ecommerce/orders", auth, ordersRouter);
 
 app.use("/api/ecommerce/users", userRouter);
 

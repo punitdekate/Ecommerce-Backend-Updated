@@ -1,0 +1,67 @@
+{
+  "name": {
+    "type": "String",
+    "required": true,
+    "readonly": false
+  },
+  "email": {
+    "type": "String",
+    "required": true,
+    "readonly": false
+  },
+  "password": {
+    "type": "String",
+    "required": true,
+    "readonly": false
+  },
+  "phone": {
+    "type": "Number",
+    "required": false,
+    "readonly": false
+  },
+  "profile": {
+    "type": "Object",
+    "required": false,
+    "readonly": false,
+    "properties": {
+      "image": {
+        "type": "String",
+        "required": false,
+        "readonly": false
+      },
+      "path": {
+        "type": "String",
+        "required": false,
+        "readonly": false
+      }
+    }
+  },
+  "role": {
+    "type": "String",
+    "required": false,
+    "readonly": false,
+    "enum": ["seller", "customer", "admin"],
+    "default": "customer"
+  },
+  "status": {
+    "type": "Boolean",
+    "required": false,
+    "readonly": false,
+    "default": true
+  },
+  "address": {
+    "type": "Array",
+    "required": false,
+    "readonly": false
+  },
+  "resetPasswordToken": {
+    "type": "String",
+    "required": false,
+    "readonly": true
+  },
+  "resetPasswordTokenExpiry": {
+    "type": "Date",
+    "required": false,
+    "readonly": true
+  }
+}

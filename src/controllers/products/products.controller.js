@@ -20,6 +20,8 @@ export default class ProductController {
   /** Get product detail*/
   async getProduct(req, res, next) {
     try {
+      logger.info("----------Start GetProduct----------");
+
       const id = req.params.productId;
       logger.info(`Product Id : ${id}`);
       if (!id.trim()) {
@@ -27,6 +29,7 @@ export default class ProductController {
       }
       const dbResponse = await this.productRepository.getById(id);
       logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End GetProduct----------");
 
       return res.status(200).json(dbResponse);
     } catch (error) {
@@ -37,6 +40,8 @@ export default class ProductController {
   /**  Get all product list */
   async getAllProducts(req, res, next) {
     try {
+      logger.info("----------Start GetAllProduct----------");
+
       /** Initialize the count for pagination */
       let count =
         req?.query?.count && req.query.count <= MAX_PAGE_SIZE
@@ -59,6 +64,8 @@ export default class ProductController {
       );
 
       logger.info(`Products List : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End GetAllProduct----------");
+
       return res.status(200).json(dbResponse);
     } catch (error) {
       next(error);
@@ -67,23 +74,56 @@ export default class ProductController {
 
   async createProduct(req, res, next) {
     try {
+      logger.info("----------Start CreateProduct----------");
+
       const id = req.user.id;
+      logger.info(`User Id : ${id}`);
+
       req.body.createdBy = id;
+      
+      logger.info(`files : ${JSON.stringify(req.files)}`);
+      const images =
+        req?.files?.length > 0
+          ? req.files.map((file) => {
+              return `http://localhost:4000/productImages/${file.filename}`;
+            })
+          : [];
+      if (images.length > 0) {
+        req.body.images = images;
+      }
+      logger.info(`Req Body : ${JSON.stringify(req.body)}`);
+
       const dbResponse = await this.productRepository.create(req.body);
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End CreateProduct----------");
+
       return res.status(201).json(dbResponse);
     } catch (error) {
-      if (error instanceof CustomMongooseError) {
-        next(error);
-      } else {
-        next(new CustomApplicationError(INTERNAL_SERVER_ERROR, 500));
-      }
+      next(error);
     }
   }
 
   async modifyProduct(req, res, next) {
     try {
+      logger.info("----------Start ModifyProduct----------");
+
       const id = req.user.id;
+      logger.info(`User Id : ${id}`);
+
+      logger.info(`files : ${JSON.stringify(req.files)}`);
+      const images = req?.files?.length > 0 ? req.files.map((file)=>{
+        return `http://localhost:4000/productImages/${file.filename}`;
+      }) : [];
+      if(images.length > 0){
+        // req.body.images = images;
+        req.body.images = [...images, req.body?.images ? req.body?.images : []];
+
+      }
+      logger.info(`Req Body : ${JSON.stringify(req.body)}`);
+
       const productId = req.params.productId;
+      logger.info(`Product Id : ${productId}`);
+
       if (!productId) {
         throw CustomApplicationError(PRODUCT_ID_IS_REQUIRED, 400);
       }
@@ -92,27 +132,31 @@ export default class ProductController {
         productId,
         req.body
       );
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End ModifyProduct----------");
+
       return res.status(200).json(dbResponse);
     } catch (error) {
-      if (error instanceof CustomMongooseError) {
         next(error);
-      } else {
-        next(new CustomApplicationError(INTERNAL_SERVER_ERROR, 500));
-      }
     }
   }
 
   async deleteProduct(req, res, next) {
     try {
-      const id = req.params.productId;
-      const dbResponse = await this.productRepository.delete(id);
+      logger.info("----------Start DeleteProduct----------");
+      const userId = req.user.id;
+      logger.info(`User Id : ${userId}`);
+
+      const productId = req.params.productId;
+      logger.info(`Product Id : ${productId}`);
+
+      const dbResponse = await this.productRepository.delete(userId, productId);
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End DeleteProduct----------");
+
       return res.status(204).json(dbResponse);
     } catch (error) {
-      if (error instanceof CustomMongooseError) {
-        next(error);
-      } else {
-        next(new CustomApplicationError(INTERNAL_SERVER_ERROR, 500));
-      }
+      next(error);
     }
   }
 }

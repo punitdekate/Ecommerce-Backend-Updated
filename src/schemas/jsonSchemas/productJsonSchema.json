@@ -1,0 +1,57 @@
+{
+  "title": {
+    "type": "String",
+    "required": true,
+    "readonly": false
+  },
+  "description": {
+    "type": "String",
+    "required": true,
+    "readonly": false
+  },
+  "price": {
+    "type": "Number",
+    "required": true,
+    "readonly": false
+  },
+  "images": {
+    "type": "Array",
+    "required": true,
+    "readonly": false
+  },
+  "stock": {
+    "type": "Number",
+    "required": true,
+    "readonly": false
+  },
+  "category": {
+    "type": "String",
+    "required": true,
+    "readonly": false
+  },
+  "brand": {
+    "type": "String",
+    "required": false,
+    "readonly": false
+  },
+  "createdBy": {
+    "type": "ObjectId",
+    "required": true,
+    "readonly": true
+  },
+  "reviews": {
+    "type": "Array",
+    "required": false,
+    "readonly": true
+  },
+  "createdAt": {
+    "type": "Date",
+    "required": false,
+    "readonly": true
+  },
+  "updatedAt": {
+    "type": "Date",
+    "required": false,
+    "readonly": true
+  }
+}

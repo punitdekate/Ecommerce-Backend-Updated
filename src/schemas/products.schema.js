@@ -39,7 +39,6 @@ const productSchema = mongoose.Schema({
   },
   brand: {
     type: String,
-    required: [true, "Brand name is required."],
     trim: true,
   },
   createdBy: {
@@ -76,17 +75,27 @@ productSchema.pre("save", function (next) {
   next();
 });
 
-productSchema.post("remove", async function (doc, next) {
+productSchema.post("findOneAndDelete", async function (doc, next) {
+  if (!doc) {
+    return next(); // No document to process
+  }
+
   try {
-    await CartModel.updateMany(
-      { "products.productId": doc._id },
-      { $pull: { products: { productId: doc._id } } }
+    // Remove all occurrences of the product from every cart
+    const result = await CartModel.updateMany(
+      { "products.productId": doc._id }, // Match carts containing the product
+      { $pull: { products: { productId: doc._id } } } // Remove the product entry
     );
-    console.log(`Removed product ${doc._id} from all carts`);
+
+    console.log(
+      `Removed product ${doc._id} from all carts. Modified count: ${result.modifiedCount}`
+    );
     next();
   } catch (err) {
+    console.error(`Error while removing product ${doc._id} from carts`, err);
     next(err);
   }
 });
+
 const ProductModel = mongoose.model("Product", productSchema);
 export default ProductModel;

@@ -5,11 +5,15 @@ import {
 } from "../../config/constants.js";
 import ProductModel from "../../schemas/products.schema.js";
 import { CustomMongooseError } from "../../utility/errorhandlers/custom.errorhandler.js";
+import logger from "../../utility/errorhandlers/logger.js";
 
 export default class ProductRepository {
   async getById(id) {
     try {
+      logger.info("----------Start Repo GetProductById----------");
       const product = await ProductModel.findById(id);
+      logger.info(`Product : ${product}`);
+      logger.info("----------End Repo GetProductById----------");
       return { success: true, data: product };
     } catch (error) {
       throw new CustomMongooseError(error.message, 401);
@@ -17,11 +21,17 @@ export default class ProductRepository {
   }
   async getAll(count, startIndex, filter = {}) {
     try {
-      const { category, brand, minPrice, maxPrice, title } = filter;
-
+      logger.info("----------Start Repo GetAllProducts----------");
+      let { category, brand, minPrice, maxPrice, title, sort, order } = filter;
+      logger.info(`Filter : ${JSON.stringify(filter)}`);
       // Prepare filter object
       const queryFilter = {};
-
+      if (!sort) {
+        sort = "title";
+      }
+      if (!order) {
+        order = 1;
+      }
       if (category) {
         queryFilter.category = category; // Assuming category is a string
       }
@@ -43,9 +53,13 @@ export default class ProductRepository {
       if (title) {
         queryFilter.title = { $regex: title, $options: "i" }; // Case-insensitive search
       }
+      logger.info(`Query Filter : ${JSON.stringify(queryFilter)}`);
+      let sortObject = {};
+      sortObject[sort] = order ? Number(order) : 1;
+      logger.info(`Sort Object : ${JSON.stringify(sortObject)}`);
       const totalDocs = await ProductModel.countDocuments(queryFilter);
       const products = await ProductModel.find(queryFilter)
-        .sort({ title: 1 })
+        .sort(sortObject)
         .skip(startIndex - 1)
         .limit(count);
       return { success: true, data: { total: totalDocs, products } };
@@ -56,6 +70,7 @@ export default class ProductRepository {
 
   async create(productData) {
     try {
+      logger.info("----------Start Repo CreateProduct----------");
       const productExist = await ProductModel.findOne({
         title: productData.title,
       });
@@ -73,6 +88,7 @@ export default class ProductRepository {
 
   async update(id, productId, productData) {
     try {
+      logger.info("----------Start Repo UpdateProduct----------");
       const productExist = await ProductModel.findById(productId);
       if (!productExist) {
         throw new CustomMongooseError(PRODUCT_NOT_EXIST, 400);
@@ -95,13 +111,14 @@ export default class ProductRepository {
     }
   }
 
-  async delete(id, productId) {
+  async delete(userId, productId) {
     try {
+      logger.info("----------Start Repo DeleteProduct----------");
       const productExist = await ProductModel.findById(productId);
       if (!productExist) {
         throw new CustomMongooseError(PRODUCT_NOT_EXIST, 400);
       } else {
-        if (productExist.createdBy !== id) {
+        if (!productExist.createdBy.equals(userId)) {
           throw new CustomMongooseError(NOT_AUTHORIZED_TO_UPDATE_PRODUCT, 400);
         } else {
           await ProductModel.findByIdAndDelete(productId);

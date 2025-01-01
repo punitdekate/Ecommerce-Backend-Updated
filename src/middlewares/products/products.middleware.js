@@ -25,15 +25,6 @@ export const validateProduct = async (req, res, next) => {
       .isFloat({ min: 0 })
       .withMessage("Price must be a positive number."),
 
-    body("images")
-      .isArray({ min: 1 })
-      .withMessage("At least one image is required.")
-      .custom((images) => {
-        if (!images.every((img) => typeof img === "string")) {
-          throw new Error("All images must be valid URLs.");
-        }
-        return true;
-      }),
     body("stock")
       .notEmpty()
       .withMessage("Stock quantity is required.")
@@ -45,12 +36,6 @@ export const validateProduct = async (req, res, next) => {
       .withMessage("Product category is required.")
       .isString()
       .withMessage("Category must be a string."),
-
-    body("brand")
-      .notEmpty()
-      .withMessage("Brand name is required.")
-      .isString()
-      .withMessage("Brand must be a string."),
   ];
 
   await Promise.all(rules.map((rule) => rule.run(req)));

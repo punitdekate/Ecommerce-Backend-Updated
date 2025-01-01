@@ -44,12 +44,7 @@ const userSchema = new mongoose.Schema({
     },
   },
   profile: {
-    image: {
-      type: String,
-    },
-    path: {
-      type: String,
-    },
+    type: String,
   },
   role: {
     type: String,

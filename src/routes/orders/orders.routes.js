@@ -9,7 +9,7 @@ ordersRouter.get("/", (req, res, next) => {
   ordersController.getUserOrders(req, res, next);
 });
 
-ordersRouter.post("/:cartId", (req, res, next) => {
+ordersRouter.post("/", (req, res, next) => {
   ordersController.placeOrder(req, res, next);
 });
 

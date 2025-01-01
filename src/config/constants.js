@@ -7,7 +7,7 @@ export const USERNAME_PASSWORD_MISSING = "Username and password are required.";
 export const USER_ID_REQUIRED = "User ID is required.";
 
 export const PRODUCT_ALREADY_EXISTS = "Product title already exists.";
-export const NOT_AUTHORIZED = "Action not authorized.";
+export const NOT_AUTHORIZED = "Only the owner/admin can perform this action.";
 export const PRODUCT_NOT_EXIST = "Product not found.";
 export const NOT_AUTHORIZED_TO_UPDATE_PRODUCT =
   "Only the owner/admin can update this product.";
@@ -18,6 +18,7 @@ export const OPERATION_IS_REQUIRED = "Operation is required";
 export const PRODUCT_QUANTITY_NOT_LESS_THAT_ONE =
   "Product quantity can not be less than 1";
 
+export const EMPTY_CART = "Cart is empty!!";
 // Server-related issues
 export const INTERNAL_SERVER_ERROR = "Server error. Please try again later.";
 

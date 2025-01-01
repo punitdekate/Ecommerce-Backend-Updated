@@ -7,6 +7,7 @@ import {
 import UserRepository from "../../repositories/users/users.repository.js";
 import { CustomApplicationError } from "../../utility/errorhandlers/custom.errorhandler.js";
 import { sendNotification } from "../../utility/email.utility.js";
+import logger from "../../utility/errorhandlers/logger.js";
 
 export default class UserController {
   constructor() {
@@ -15,13 +16,19 @@ export default class UserController {
 
   async generateToken(req, res, next) {
     try {
+      logger.info("----------Start GenerateToken----------");
+
       const { email, password } = req.body;
+      logger.info(`email : ${email}`);
       if (!email || !password) {
         return res
           .status(400)
           .json({ status: false, msg: USERNAME_PASSWORD_MISSING });
       }
       const dbResponse = await this.userRepository.token(email, password);
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End GenerateToken----------");
+
       return res.status(200).json(dbResponse);
     } catch (error) {
       next(error);
@@ -29,7 +36,12 @@ export default class UserController {
   }
   async getAllUsers(req, res, next) {
     try {
+      logger.info("----------Start GetAllUsers----------");
+
       const dbResponse = await this.userRepository.getAll();
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End GetAllUsers----------");
+
       return res.status(200).json(dbResponse);
     } catch (error) {
       next(error);
@@ -38,13 +50,20 @@ export default class UserController {
 
   async createUser(req, res, next) {
     try {
+      logger.info("----------Start CreateUser----------");
+
       const userData = req.body;
       const dbResponse = await this.userRepository.create(userData);
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+
       await sendNotification(
         userData.email,
         "Registered successfully.",
         `Hello ${userData.name} welcome to ecommerce`
       );
+
+      logger.info("----------End CreateUser----------");
+
       return res.status(201).json(dbResponse);
     } catch (error) {
       next(error);
@@ -53,14 +72,18 @@ export default class UserController {
 
   async getUser(req, res, next) {
     try {
+      logger.info("----------Start GetUser----------");
+
       const { id } = req.params;
-      if (!id) {
-        throw new CustomApplicationError(ID_NOT_PRESENT, 400);
-      }
-      if (!isValidObjectId(id)) {
+      logger.info(`User Id : ${id}`);
+      if (!id.trim() || !isValidObjectId(id)) {
         throw new CustomApplicationError(INVALID_ID, 400);
       }
       const dbResponse = await this.userRepository.getById(id);
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+
+      logger.info("----------End GetUser----------");
+
       res.status(200).json(dbResponse);
     } catch (error) {
       next(error);
@@ -69,19 +92,23 @@ export default class UserController {
 
   async modifyUser(req, res, next) {
     try {
+      logger.info("----------Start ModifyUser----------");
+
       const { id } = req.params;
       const user = req.user;
-      if (!id) {
+      logger.info(`User Id : ${id}, User : ${JSON.stringify(user)}`);
+      if (!id.trim() || !isValidObjectId(id)) {
         throw new CustomApplicationError(USER_ID_REQUIRED, 400);
       }
       if (req.file) {
         req.body.profile = { image: req.file.filename, path: req.file.path };
       }
-      if (!isValidObjectId(id)) {
-        throw new CustomApplicationError(INVALID_ID, 400);
-      }
+
       await this.userRepository.isAuthorizeToPerformAction(id, user);
       const dbResponse = await this.userRepository.update(id, req.body);
+      logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End ModifyUser----------");
+
       return res.status(200).json(dbResponse);
     } catch (error) {
       next(error);

@@ -15,11 +15,14 @@ export default class CartController {
   /** Get user cart */
   async getUserCart(req, res, next) {
     try {
+      logger.info("----------Start GetUserCart----------");
+
       const userId = req.user.id;
       logger.info(`User Id : ${userId}`);
 
       const dbResponse = await this.cartRepository.getByUserId(userId);
       logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End GetUserCart----------");
 
       return res.status(200).json(dbResponse);
     } catch (error) {
@@ -30,6 +33,8 @@ export default class CartController {
   /** add product to user cart */
   async addToUserCart(req, res, next) {
     try {
+      logger.info("----------Start AddToUserCart----------");
+      
       const userId = req.user.id;
       const productId = req.params.productId;
       logger.info(`User Id : ${userId}, Product Id : ${productId}`);
@@ -38,6 +43,7 @@ export default class CartController {
       }
       const dbResponse = await this.cartRepository.add(productId, userId);
       logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End AddToUserCart----------");
 
       return res.status(200).json(dbResponse);
     } catch (error) {
@@ -48,6 +54,8 @@ export default class CartController {
   /** remove product from the user cart */
   async deleteProductFromUserCart(req, res, next) {
     try {
+      logger.info("----------Start DeleteProductFromUserCart----------");
+
       const userId = req.user.id;
       const productId = req.params.productId;
       if (!productId) {
@@ -60,6 +68,7 @@ export default class CartController {
         userId
       );
       logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End DeleteProductFromUserCart----------");
 
       return res.status(200).json(dbResponse);
     } catch (error) {
@@ -70,6 +79,8 @@ export default class CartController {
   /** update the cart product e.g. count of product */
   async updateCartProduct(req, res, next) {
     try {
+      logger.info("----------Start UpdateCartProduct----------");
+
       const productId = req.params.productId;
       const userId = req.user.id;
       const { op } = req.query;
@@ -86,6 +97,7 @@ export default class CartController {
         op
       );
       logger.info(`dbResponse : ${JSON.stringify(dbResponse)}`);
+      logger.info("----------End UpdateCartProduct----------");
 
       return res.status(200).json(dbResponse);
     } catch (error) {
