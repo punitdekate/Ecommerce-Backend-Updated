@@ -17,9 +17,9 @@ app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "http://localhost:3000", // Replace with your frontend's origin
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
+    origin: "*", // Allow all origins
+    methods: "GET, POST, PUT, DELETE, PATCH, OPTIONS", // Allow specific methods
+    allowedHeaders: "Content-Type, Authorization", // Allow specific headers
   })
 );
 
